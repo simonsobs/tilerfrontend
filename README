@@ -1,0 +1,8 @@
+Tiler Frontend
+==============
+
+This is the frontend for the live tiler service. It provides a map viewer that
+has some basic analysis functionality for rapid exploration of maps.
+
+The project is currently in its very early stages. Please check out the
+GitHub project information for more, or contact Josh Borrow.
