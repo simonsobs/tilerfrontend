@@ -197,6 +197,11 @@ export class HistogramControl extends L.Control {
     const edges = this.options.edges;
     const histogram = this.options.histogram;
 
+    /* Check if we need to remove the old histogram... */
+    if (this.polyline) {
+      this.polyline.remove();
+    }
+
     /* Translate the data into pixelization co-ordinates */
 
     this.edge_start = Math.min(...edges);
