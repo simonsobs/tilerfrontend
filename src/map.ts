@@ -10,8 +10,10 @@ import { LayerLoader, tileRenderingOptions } from "./layerLoader"
 import { MutableLayerControl, MutableLayerControlOptions } from "./layerControl";
 
 const api_endpoint_container: HTMLElement = document.getElementById("api-endpoint-server");
+const websocket_endpoint_container: HTMLElement = document.getElementById("websocket-endpoint-server");
 
 const SERVER: string = api_endpoint_container.innerHTML;
+const WEBSOCKET: string = websocket_endpoint_container.innerHTML;
 console.log("Server set to:", SERVER);
 
 const options: MapOptions = {
@@ -23,7 +25,7 @@ const options: MapOptions = {
 const mymap = map('map', options);
 
 
-const layers = new LayerLoader(SERVER);
+const layers = new LayerLoader(SERVER, WEBSOCKET);
 layers.get_tile_layers().then(() => { 
     layers.add_to_map(mymap);
 

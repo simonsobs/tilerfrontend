@@ -1,5 +1,6 @@
 import { TileLayer, latLng, latLngBounds, tileLayer } from "leaflet";
 import "./mutableTileLayer";
+import "./mutableWebsocketTileLayer";
 import { histogramControl } from "./histogramControl";
 
 
@@ -55,6 +56,7 @@ function map_and_band_to_names(tile_layer: tileLayerOptions, band: bandOptions):
 
 export class LayerLoader {
     server: string;
+    websocket: string;
     file_list: fileInfo[];
     layer_list: string[] = [];
     base_layers: { [key: string]: TileLayer } = {};
@@ -64,8 +66,9 @@ export class LayerLoader {
 
     histogram_control: histogramControl;
 
-    constructor(server: string) {
+    constructor(server: string, websocket: string) {
         this.server = server;
+        this.websocket = websocket;
     }
 
     async get_map_list() : Promise<fileInfo[]> {
@@ -135,10 +138,12 @@ export class LayerLoader {
                     cmap: metadata.recommended_cmap, vmin: metadata.recommended_cmap_min, vmax:metadata.recommended_cmap_max
                 };
 
-                /* Ignore the linter; mutableTileLayer is added as an extension */
-                const layer = tileLayer.mutableTileLayer(`${this.server}maps/FITS_Image/${metadata.id}/{z}/{y}/{x}/tile.webp`, {
+                /* Try out the tile layer with websockets... */
+                const layer = tileLayer.mutableWebsocketTileLayer(this.websocket, {
+                    map: file_name,
+                    band: metadata.id,
                     /* Even if the tile size is not 256, we still need to set it as this. I
-                    * have no idea why, but if you set it as the correct value everything breaks */
+* have no idea why, but if you set it as the correct value everything breaks */
                     tileSize: 256,
                     zoomOffset: 0,
                     minZoom: 0,
@@ -149,8 +154,25 @@ export class LayerLoader {
                     bounds: bounds,
                     keepBuffer: 16,
                     tms: true,
-                    parameters: rendering_options,
-                });
+                    parameters: rendering_options,}
+                );
+
+                // /* Ignore the linter; mutableTileLayer is added as an extension */
+                // const layer = tileLayer.mutableTileLayer(`${this.server}maps/FITS_Image/${metadata.id}/{z}/{y}/{x}/tile.webp`, {
+                //     /* Even if the tile size is not 256, we still need to set it as this. I
+                //     * have no idea why, but if you set it as the correct value everything breaks */
+                //     tileSize: 256,
+                //     zoomOffset: 0,
+                //     minZoom: 0,
+                //     maxZoom: metadata.levels + 3,
+                //     noWrap: true,
+                //     minNativeZoom: min_native_zoom,
+                //     maxNativeZoom: max_native_zoom,
+                //     bounds: bounds,
+                //     keepBuffer: 16,
+                //     tms: true,
+                //     parameters: rendering_options,
+                // });
 
                 this.base_layers[layer_name] = layer;
                 this.rendering_options[layer_name] = rendering_options;
